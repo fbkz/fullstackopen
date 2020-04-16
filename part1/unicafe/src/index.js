@@ -7,7 +7,7 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 );
 
-const Part = ({ text, value, symbol }) => (
+const Statistic = ({ text, value, symbol }) => (
   <>
     {text} {value} {symbol}
     <br />
@@ -24,14 +24,14 @@ const Statistics = ({ good, neutral, bad }) => {
   }
 
   return (
-    <>
-      <Part text="good" value={good} />
-      <Part text="neutral" value={neutral} />
-      <Part text="bad" value={bad} />
-      <Part text="all" value={total} />
-      <Part text="average" value={average} />
-      <Part text="positive" value={positivePerc} symbol="%" />
-    </>
+    <div>
+      <Statistic text="good" value={good} />
+      <Statistic text="neutral" value={neutral} />
+      <Statistic text="bad" value={bad} />
+      <Statistic text="all" value={total} />
+      <Statistic text="average" value={average} />
+      <Statistic text="positive" value={positivePerc} symbol="%" />
+    </div>
   );
 };
 
