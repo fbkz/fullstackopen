@@ -6,15 +6,34 @@ const Input = ({ text, value, handleChange }) => (
   </>
 );
 
+const PersonForm = ({
+  handleSubmit,
+  name,
+  handleNameChange,
+  number,
+  handleNumberChange,
+}) => (
+  <form onSubmit={handleSubmit}>
+    <div>
+      <Input text="name:" value={name} handleChange={handleNameChange} />
+      <br />
+      <Input text="number:" value={number} handleChange={handleNumberChange} />
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
+);
+
 const SubHeader = ({ text }) => <h2>{text}</h2>;
 
-const Number = ({ name, number }) => <li>{`${name} ${number}`}</li>;
+const Person = ({ name, number }) => <li>{`${name} ${number}`}</li>;
 
-const Numbers = ({ persons }) => {
+const Persons = ({ persons }) => {
   return (
     <ul style={{ listStyleType: "none", margin: 0, padding: 0 }}>
       {persons.map((person) => (
-        <Number key={person.name} name={person.name} number={person.number} />
+        <Person key={person.name} name={person.name} number={person.number} />
       ))}
     </ul>
   );
@@ -73,26 +92,20 @@ const App = () => {
         value={newSearch}
         handleChange={handleSearchChange}
       />
-      <SubHeader text="add a new" />
-      <form onSubmit={addPerson}>
-        <div>
-          <Input text="name:" value={newName} handleChange={handleNameChange} />
-          <br />
-          <Input
-            text="number:"
-            value={newNumber}
-            handleChange={handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h3>add a new</h3>
+      <PersonForm
+        handleSubmit={addPerson}
+        name={newName}
+        handleNameChange={handleNameChange}
+        number={newNumber}
+        handleNumberChange={handleNumberChange}
+      />
+
       <SubHeader text="Numbers" />
       {newSearch ? (
-        <Numbers persons={searchFilter()} />
+        <Persons persons={searchFilter()} />
       ) : (
-        <Numbers persons={persons} />
+        <Persons persons={persons} />
       )}
     </div>
   );
