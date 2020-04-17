@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "040-1234567" },
+  ]);
   const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
+  };
+
+  const handleNumberChange = (e) => {
+    setNewNumber(e.target.value);
   };
 
   const addPerson = (e) => {
@@ -15,8 +22,9 @@ const App = () => {
     const result = persons.find(personExists);
 
     if (result === undefined) {
-      setPersons(persons.concat({ name: newName }));
+      setPersons(persons.concat({ name: newName, number: newNumber }));
       setNewName("");
+      setNewNumber("");
       return;
     }
 
@@ -29,6 +37,8 @@ const App = () => {
       <form onSubmit={addPerson}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
+          <br />
+          number: <input value={newNumber} onChange={handleNumberChange} />
         </div>
         <div>
           <button type="submit">add</button>
@@ -37,7 +47,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul style={{ listStyleType: "none" }}></ul>
       {persons.map((person) => (
-        <li key={person.name}>{person.name}</li>
+        <li key={person.name}>{`${person.name} ${person.number}`}</li>
       ))}
     </div>
   );
