@@ -1,7 +1,10 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
-const persons = [
+app.use(morgan("tiny"));
+
+let persons = [
   {
     name: "Arto Hellas",
     number: "040-123456",
@@ -43,17 +46,25 @@ app.get("/api/persons", (req, res) => {
   res.json(persons);
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = +req.params.id;
-  const personExists = (person) => person.id === id;
-  const person = persons.find(personExists);
+app
+  .route("/api/persons/:id")
+  .get((req, res) => {
+    const id = +req.params.id;
+    const personExists = (person) => person.id === id;
+    const person = persons.find(personExists);
 
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
-});
+    if (person) {
+      res.json(person);
+    } else {
+      res.status(404).end();
+    }
+  })
+  .delete((req, res) => {
+    const id = +req.params.id;
+    const filterPersons = (person) => !(person.id === id);
+    persons = persons.filter(filterPersons);
+    res.status(204).end();
+  });
 
 const PORT = 3002;
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
