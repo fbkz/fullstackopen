@@ -22,7 +22,11 @@ const Country = ({ name, capital, population, languages, flag }) => (
 
 const Countries = ({ countries, handleClick }) =>
   countries.map((country) => (
-    <li key={country.alpha3Code}> {country.name} </li>
+    <li key={country.alpha3Code}>
+      {" "}
+      {country.name}{" "}
+      <button onClick={() => handleClick([country])}>show</button>{" "}
+    </li>
   ));
 
 const App = () => {
@@ -76,7 +80,7 @@ const App = () => {
           flag={country[0].flag}
         />
       ) : searchResults ? (
-        <Countries countries={searchResults} />
+        <Countries countries={searchResults} handleClick={setCountry} />
       ) : null}
     </div>
   );
