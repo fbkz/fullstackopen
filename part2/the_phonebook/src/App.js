@@ -59,7 +59,10 @@ const Notifications = ({ message, error }) => {
     marginBottom: "10px",
   };
 
-  if (!error) {
+  if (error) {
+    styling.color = "red";
+    return <p style={styling}>{message}</p>;
+  } else {
     styling.color = "green";
     return <p style={styling}>{message}</p>;
   }
@@ -140,7 +143,15 @@ const App = () => {
             setPersons(updateState);
           }
         })
-        .catch(console.error);
+        .catch((err) => {
+          setNotifications({
+            message: `${person.name} was already removed from the server`,
+            error: true,
+          });
+          setTimeout(() => {
+            setNotifications(null);
+          }, 5000);
+        });
     }
   };
 
