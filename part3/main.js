@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const app = express();
 
 app.use(morgan("tiny"));
+app.use(express.json());
 
 let persons = [
   {
@@ -32,7 +33,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/info", (req, res) => {
-  console.log(req);
   const dateNow = new Date();
 
   res.send(
@@ -42,9 +42,38 @@ app.get("/info", (req, res) => {
   );
 });
 
-app.get("/api/persons", (req, res) => {
-  res.json(persons);
-});
+app
+  .route("/api/persons")
+  .get((req, res) => {
+    res.json(persons);
+  })
+  .post((req, res) => {
+    const body = req.body;
+
+    const propertyMissing = !body.name || !body.number;
+    if (propertyMissing) {
+      return res.status(400).json({
+        error: "name or number is missing",
+      });
+    }
+
+    const personSearch = (person) => person.name === body.name;
+    const personExists = persons.find(personSearch);
+    if (personExists) {
+      return res.status(400).json({
+        error: "name already exists",
+      });
+    }
+
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: Math.floor(Math.random() * Math.floor(500000)),
+    };
+
+    persons = persons.concat(person);
+    res.json(person);
+  });
 
 app
   .route("/api/persons/:id")
@@ -66,5 +95,5 @@ app
     res.status(204).end();
   });
 
-const PORT = 3002;
+const PORT = 3003;
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
