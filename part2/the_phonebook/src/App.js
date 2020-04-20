@@ -74,10 +74,29 @@ const App = () => {
   const addPerson = (e) => {
     e.preventDefault();
 
-    const personExists = ({ name }) => name === newName;
-    const result = persons.find(personExists);
-
-    if (result === undefined) {
+    const searchPerson = ({ name }) => name === newName;
+    const personExists = persons.find(searchPerson);
+    if (personExists) {
+      const changeNumberConfirm = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (changeNumberConfirm) {
+        personService
+          .update(personExists.id, {
+            ...personExists,
+            number: newNumber,
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              let index = persons.indexOf(personExists);
+              let updatedPersons = [...persons];
+              updatedPersons.splice(index, 1, res.data);
+              setPersons(updatedPersons);
+            }
+          })
+          .catch(console.error);
+      }
+    } else {
       const newPerson = { name: newName, number: newNumber };
       personService.create(newPerson).then(({ data }) => {
         setPersons(persons.concat(data));
@@ -87,8 +106,6 @@ const App = () => {
 
       return;
     }
-
-    alert(`${newName} is already added to phonebook`);
   };
 
   const deletePerson = (person) => {
