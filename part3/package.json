@@ -1,0 +1,20 @@
+{
+  "name": "part3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js",
+    "dev": "nodemon main.js"
+  },
+  "keywords": [],
+  "author": "fbkz",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
