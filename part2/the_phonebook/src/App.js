@@ -28,13 +28,22 @@ const PersonForm = ({
 
 const SubHeader = ({ text }) => <h2>{text}</h2>;
 
-const Person = ({ name, number }) => <li>{`${name} ${number}`}</li>;
+const Person = ({ name, number, handleClick }) => (
+  <li>
+    {`${name} ${number}`} <button onClick={() => handleClick()}>delete</button>{" "}
+  </li>
+);
 
-const Persons = ({ persons }) => {
+const Persons = ({ persons, deletePerson }) => {
   return (
     <ul style={{ listStyleType: "none", margin: 0, padding: 0 }}>
       {persons.map((person) => (
-        <Person key={person.name} name={person.name} number={person.number} />
+        <Person
+          key={person.name}
+          name={person.name}
+          number={person.number}
+          handleClick={() => deletePerson(person)}
+        />
       ))}
     </ul>
   );
@@ -70,15 +79,31 @@ const App = () => {
 
     if (result === undefined) {
       const newPerson = { name: newName, number: newNumber };
-      personService.create(newPerson);
+      personService.create(newPerson).then(({ data }) => {
+        setPersons(persons.concat(data));
+        setNewName("");
+        setNewNumber("");
+      });
 
-      setPersons(persons.concat(newPerson));
-      setNewName("");
-      setNewNumber("");
       return;
     }
 
     alert(`${newName} is already added to phonebook`);
+  };
+
+  const deletePerson = (person) => {
+    const deleteConfirmation = window.confirm(`Delete ${person.name}?`);
+    if (deleteConfirmation) {
+      personService
+        .deleteObj(person.id)
+        .then((res) => {
+          if (res.status === 200) {
+            const updateState = persons.filter((x) => !(x.id === person.id));
+            setPersons(updateState);
+          }
+        })
+        .catch(console.error);
+    }
   };
 
   const searchFilter = () => {
@@ -108,7 +133,7 @@ const App = () => {
       {newSearch ? (
         <Persons persons={searchFilter()} />
       ) : (
-        <Persons persons={persons} />
+        <Persons persons={persons} deletePerson={deletePerson} />
       )}
     </div>
   );
