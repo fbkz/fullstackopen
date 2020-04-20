@@ -2,7 +2,16 @@ const express = require("express");
 const morgan = require("morgan");
 const app = express();
 
-app.use(morgan("tiny"));
+morgan.token("post", function (req, res) {
+  if (req.method === "POST") {
+    return JSON.stringify(req.body);
+  }
+});
+
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :post")
+);
+
 app.use(express.json());
 
 let persons = [
@@ -41,7 +50,7 @@ app.get("/info", (req, res) => {
     } people</h1><br/><p>${dateNow.toString()}</p>`
   );
 });
-
+21056 / 144295539 / 20.0;
 app
   .route("/api/persons")
   .get((req, res) => {
