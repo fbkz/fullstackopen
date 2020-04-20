@@ -50,10 +50,18 @@ app
   .post((req, res) => {
     const body = req.body;
 
-    const propertyMissing = !body.name || !body.number;
-    if (propertyMissing) {
+    const propertiesMissing = !body.name && !body.number;
+    if (propertiesMissing) {
       return res.status(400).json({
-        error: "name or number is missing",
+        error: "name and number are missing",
+      });
+    } else if (!body.name) {
+      return res.status(400).json({
+        error: "name is missing",
+      });
+    } else if (!body.number) {
+      return res.status(400).json({
+        error: "number is missing",
       });
     }
 
@@ -61,7 +69,7 @@ app
     const personExists = persons.find(personSearch);
     if (personExists) {
       return res.status(400).json({
-        error: "name already exists",
+        error: "name must be unique",
       });
     }
 
