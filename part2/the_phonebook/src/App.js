@@ -71,7 +71,10 @@ const App = () => {
     const result = persons.find(personExists);
 
     if (result === undefined) {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
+      const newPerson = { name: newName, number: newNumber };
+      axios.post("http://localhost:3001/persons", newPerson);
+
+      setPersons(persons.concat(newPerson));
       setNewName("");
       setNewNumber("");
       return;
