@@ -5,20 +5,49 @@ const Input = ({ value, handleChange }) => (
   <input value={value} onChange={handleChange} />
 );
 
-const Country = ({ name, capital, population, languages, flag }) => (
-  <div>
-    <h2>{name}</h2>
-    capital {capital} <br />
-    population {population} <br />
-    <h3>languages</h3>
-    <ul>
-      {languages.map((lang) => {
-        return <li key={lang.iso639_2}>{lang.name}</li>;
-      })}
-    </ul>
-    <img src={flag} alt={`flag of ${name}`} style={{ width: "20%" }} />
-  </div>
-);
+const Country = ({ name, capital, population, languages, flag }) => {
+  const [weather, setWeather] = useState("");
+  const [weatherIcon, setWeatherIcon] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    const weatherURL = `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_KEY}&q=${capital}`;
+
+    fetch(weatherURL)
+      .then((res) => res.json())
+      .then((data) => {
+        if (mounted) {
+          setWeather(data.current);
+          setWeatherIcon(data.current.condition);
+        }
+      });
+
+    return () => (mounted = false);
+  }, [capital]);
+
+  return (
+    <div>
+      <h2>{name}</h2>
+      capital {capital} <br />
+      population {population} <br />
+      <h3>Spoken languages</h3>
+      <ul>
+        {languages.map((lang) => {
+          return <li key={lang.iso639_2}>{lang.name}</li>;
+        })}
+      </ul>
+      <img src={flag} alt={`flag of ${name}`} style={{ width: "20%" }} />
+      <h3>Weather in {capital}</h3> <br />
+      <b>temperature</b>: {weather.temp_c} Celsius <br />
+      <img
+        src={`http:${weatherIcon.icon}`}
+        alt={`http:${weatherIcon.text}`}
+      />{" "}
+      <br />
+      <b>wind</b>: {weather.wind_mph} mph direction {weather.wind_dir}
+    </div>
+  );
+};
 
 const Countries = ({ countries, handleClick }) =>
   countries.map((country) => (
