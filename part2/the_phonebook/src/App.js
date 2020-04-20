@@ -49,11 +49,28 @@ const Persons = ({ persons, deletePerson }) => {
   );
 };
 
+const Notifications = ({ message, error }) => {
+  const styling = {
+    background: "lightgrey",
+    fontSize: "20px",
+    borderStyle: "solid",
+    borderRadius: "5px",
+    padding: "10px",
+    marginBottom: "10px",
+  };
+
+  if (!error) {
+    styling.color = "green";
+    return <p style={styling}>{message}</p>;
+  }
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newSearch, setSearch] = useState("");
+  const [notifications, setNotifications] = useState("");
 
   useEffect(() => {
     personService.getAll().then(({ data }) => setPersons(data));
@@ -102,6 +119,10 @@ const App = () => {
         setPersons(persons.concat(data));
         setNewName("");
         setNewNumber("");
+        setNotifications({ message: `Added ${newName}`, error: false });
+        setTimeout(() => {
+          setNotifications(null);
+        }, 5000);
       });
 
       return;
@@ -132,6 +153,12 @@ const App = () => {
   return (
     <div>
       <SubHeader text="Phonebook" />
+      {notifications ? (
+        <Notifications
+          message={notifications.message}
+          error={notifications.error}
+        />
+      ) : null}{" "}
       <Input
         text="filter shown with"
         value={newSearch}
@@ -145,7 +172,6 @@ const App = () => {
         number={newNumber}
         handleNumberChange={handleNumberChange}
       />
-
       <SubHeader text="Numbers" />
       {newSearch ? (
         <Persons persons={searchFilter()} />
