@@ -102,6 +102,17 @@ app
         res.status(204).end();
       })
       .catch((err) => next(err));
+  })
+  .put((req, res, next) => {
+    const id = req.params.id;
+    const body = req.body;
+    const person = { name: body.name, number: body.number };
+
+    Person.findByIdAndUpdate(id, person, { new: true })
+      .then((result) => {
+        res.json(result.toJSON());
+      })
+      .catch((err) => next(err));
   });
 
 app.use(errorHandler);
