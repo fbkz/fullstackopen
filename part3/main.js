@@ -35,20 +35,20 @@ app.get("/", (req, res) => {
 app.get("/info", (req, res) => {
   const dateNow = new Date();
 
-  res.send(
-    `<p>Phonebook has info for ${
-      persons.length
-    } people</h1><br/><p>${dateNow.toString()}</p>`
-  );
+  Person.estimatedDocumentCount().then((result) => {
+    res.send(
+      `<p>Phonebook has info for ${result} people</h1><br/><p>${dateNow.toString()}</p>`
+    );
+  });
 });
 
 app
   .route("/api/persons")
   .get((req, res) => {
-    Person.find({}).then((persons) => {
+    Person.find({}).then((result) => {
       res.json(
-        persons.map((person) => {
-          return person.toJSON();
+        result.map((result) => {
+          return result.toJSON();
         })
       );
     });
@@ -83,16 +83,18 @@ app
 
 app
   .route("/api/persons/:id")
-  .get((req, res) => {
-    const id = +req.params.id;
-    const personExists = (person) => person.id === id;
-    const person = persons.find(personExists);
+  .get((req, res, next) => {
+    const id = req.params.id;
 
-    if (person) {
-      res.json(person);
-    } else {
-      res.status(404).end();
-    }
+    Person.findById(id)
+      .then((result) => {
+        if (result) {
+          res.json(result.toJSON());
+        } else {
+          response.status(404).end();
+        }
+      })
+      .catch((err) => next(err));
   })
   .delete((req, res, next) => {
     const id = req.params.id;
