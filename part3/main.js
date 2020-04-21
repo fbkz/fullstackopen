@@ -20,28 +20,13 @@ app.use(
 
 app.use(express.json());
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1,
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2,
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3,
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4,
-  },
-];
+const errorHandler = (error, request, response, next) => {
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
 
 app.get("/", (req, res) => {
   res.send("<h1>hello world!</h1>");
@@ -109,15 +94,17 @@ app
       res.status(404).end();
     }
   })
-  .delete((req, res) => {
+  .delete((req, res, next) => {
     const id = req.params.id;
 
     Person.findByIdAndRemove(id)
       .then((result) => {
         res.status(204).end();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => next(err));
   });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
