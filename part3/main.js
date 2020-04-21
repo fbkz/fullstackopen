@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./mongo_for_backend");
 const app = express();
 
 app.use(cors());
@@ -54,11 +56,17 @@ app.get("/info", (req, res) => {
     } people</h1><br/><p>${dateNow.toString()}</p>`
   );
 });
-21056 / 144295539 / 20.0;
+
 app
   .route("/api/persons")
   .get((req, res) => {
-    res.json(persons);
+    Person.find({}).then((persons) => {
+      res.json(
+        persons.map((person) => {
+          return person.toJSON();
+        })
+      );
+    });
   })
   .post((req, res) => {
     const body = req.body;
