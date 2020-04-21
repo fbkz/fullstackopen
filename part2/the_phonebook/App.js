@@ -158,6 +158,7 @@ const App = () => {
   const searchFilter = () => {
     const searchPerson = (person) =>
       person.name.toLowerCase().includes(newSearch.toLocaleLowerCase());
+
     return persons.filter(searchPerson);
   };
 
@@ -185,7 +186,7 @@ const App = () => {
       />
       <SubHeader text="Numbers" />
       {newSearch ? (
-        <Persons persons={searchFilter()} />
+        <Persons persons={searchFilter()} deletePerson={deletePerson} />
       ) : (
         <Persons persons={persons} deletePerson={deletePerson} />
       )}
