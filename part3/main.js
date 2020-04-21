@@ -110,11 +110,14 @@ app
     }
   })
   .delete((req, res) => {
-    const id = +req.params.id;
-    const filterPersons = (person) => !(person.id === id);
-    persons = persons.filter(filterPersons);
-    res.status(204).end();
+    const id = req.params.id;
+
+    Person.findByIdAndRemove(id)
+      .then((result) => {
+        res.status(204).end();
+      })
+      .catch((err) => console.log(err));
   });
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
