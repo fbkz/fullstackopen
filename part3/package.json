@@ -2,11 +2,15 @@
   "name": "part3",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node main.js",
-    "dev": "nodemon main.js"
+    "dev": "nodemon main.js",
+    "deploy": "git push heroku master",
+    "logs:prod": "heroku logs --tail",
+    "build:ui": "rm -rf build && cd ../part2/the_phonebook/ && npm run build --prod && cp -r build ../../part3",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy"
   },
   "keywords": [],
   "author": "fbkz",
