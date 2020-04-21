@@ -86,22 +86,14 @@ app
       });
     }
 
-    const personSearch = (person) => person.name === body.name;
-    const personExists = persons.find(personSearch);
-    if (personExists) {
-      return res.status(400).json({
-        error: "name must be unique",
-      });
-    }
-
-    const person = {
+    const person = new Person({
       name: body.name,
       number: body.number,
-      id: Math.floor(Math.random() * Math.floor(500000)),
-    };
+    });
 
-    persons = persons.concat(person);
-    res.json(person);
+    person.save().then((result) => {
+      res.json(result.toJSON());
+    });
   });
 
 app
