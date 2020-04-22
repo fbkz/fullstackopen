@@ -114,19 +114,24 @@ const App = () => {
               setPersons(updatedPersons);
             }
           })
-          .catch(console.error);
+          .catch((err) => console.log(err));
       }
     } else {
       const newPerson = { name: newName, number: newNumber };
-      personService.create(newPerson).then(({ data }) => {
-        setPersons(persons.concat(data));
-        setNewName("");
-        setNewNumber("");
-        setNotifications({ message: `Added ${newName}`, error: false });
-        setTimeout(() => {
-          setNotifications(null);
-        }, 5000);
-      });
+      personService
+        .create(newPerson)
+        .then(({ data }) => {
+          setPersons(persons.concat(data));
+          setNewName("");
+          setNewNumber("");
+          setNotifications({ message: `Added ${newName}`, error: false });
+          setTimeout(() => {
+            setNotifications(null);
+          }, 5000);
+        })
+        .catch((err) =>
+          setNotifications({ message: err.response.data.error, error: true })
+        );
 
       return;
     }
