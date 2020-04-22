@@ -114,19 +114,26 @@ const App = () => {
               setPersons(updatedPersons);
             }
           })
-          .catch(console.error);
+          .catch((err) =>
+            setNotifications({ message: err.response.data.error, error: true })
+          );
       }
     } else {
       const newPerson = { name: newName, number: newNumber };
-      personService.create(newPerson).then(({ data }) => {
-        setPersons(persons.concat(data));
-        setNewName("");
-        setNewNumber("");
-        setNotifications({ message: `Added ${newName}`, error: false });
-        setTimeout(() => {
-          setNotifications(null);
-        }, 5000);
-      });
+      personService
+        .create(newPerson)
+        .then(({ data }) => {
+          setPersons(persons.concat(data));
+          setNewName("");
+          setNewNumber("");
+          setNotifications({ message: `Added ${newName}`, error: false });
+          setTimeout(() => {
+            setNotifications(null);
+          }, 5000);
+        })
+        .catch((err) =>
+          setNotifications({ message: err.response.data.error, error: true })
+        );
 
       return;
     }
@@ -138,7 +145,7 @@ const App = () => {
       personService
         .deleteObj(person.id)
         .then((res) => {
-          if (res.status === 200) {
+          if (res.status === 204) {
             const updateState = persons.filter((x) => !(x.id === person.id));
             setPersons(updateState);
           }
@@ -158,6 +165,7 @@ const App = () => {
   const searchFilter = () => {
     const searchPerson = (person) =>
       person.name.toLowerCase().includes(newSearch.toLocaleLowerCase());
+
     return persons.filter(searchPerson);
   };
 
@@ -185,7 +193,7 @@ const App = () => {
       />
       <SubHeader text="Numbers" />
       {newSearch ? (
-        <Persons persons={searchFilter()} />
+        <Persons persons={searchFilter()} deletePerson={deletePerson} />
       ) : (
         <Persons persons={persons} deletePerson={deletePerson} />
       )}
