@@ -23,8 +23,9 @@ app.use(express.json());
 const errorHandler = (error, request, response, next) => {
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
-
   next(error);
 };
 
@@ -53,32 +54,20 @@ app
       );
     });
   })
-  .post((req, res) => {
+  .post((req, res, next) => {
     const body = req.body;
-
-    const propertiesMissing = !body.name && !body.number;
-    if (propertiesMissing) {
-      return res.status(400).json({
-        error: "name and number are missing",
-      });
-    } else if (!body.name) {
-      return res.status(400).json({
-        error: "name is missing",
-      });
-    } else if (!body.number) {
-      return res.status(400).json({
-        error: "number is missing",
-      });
-    }
 
     const person = new Person({
       name: body.name,
       number: body.number,
     });
 
-    person.save().then((result) => {
-      res.json(result.toJSON());
-    });
+    person
+      .save()
+      .then((result) => {
+        res.json(result.toJSON());
+      })
+      .catch((err) => next(err));
   });
 
 app
