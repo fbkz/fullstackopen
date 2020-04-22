@@ -99,7 +99,11 @@ app
     const body = req.body;
     const person = { name: body.name, number: body.number };
 
-    Person.findByIdAndUpdate(id, person, { new: true })
+    Person.findByIdAndUpdate(id, person, {
+      new: true,
+      runValidators: true,
+      context: "query",
+    })
       .then((result) => {
         res.json(result.toJSON());
       })
