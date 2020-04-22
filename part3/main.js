@@ -8,7 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.static("build"));
 
-morgan.token("post", function (req, res) {
+// eslint-disable-next-line
+morgan.token("post", (req, res) => {
   if (req.method === "POST") {
     return JSON.stringify(req.body);
   }
@@ -80,7 +81,7 @@ app
         if (result) {
           res.json(result.toJSON());
         } else {
-          response.status(404).end();
+          res.status(404).end();
         }
       })
       .catch((err) => next(err));
@@ -89,7 +90,7 @@ app
     const id = req.params.id;
 
     Person.findByIdAndRemove(id)
-      .then((result) => {
+      .then(() => {
         res.status(204).end();
       })
       .catch((err) => next(err));

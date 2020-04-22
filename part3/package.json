@@ -10,13 +10,18 @@
     "deploy": "git push heroku master",
     "logs:prod": "heroku logs --tail",
     "build:ui": "rm -rf build && cd ../part2/the_phonebook/ && npm run build --prod && cp -r build ../../part3",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && npm run deploy",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "fbkz",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^2.0.3"
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "nodemon": "^2.0.3",
+    "prettier": "^2.0.5"
   },
   "dependencies": {
     "cors": "^2.8.5",
