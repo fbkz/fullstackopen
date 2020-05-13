@@ -49,3 +49,15 @@ test("http post to /api/blogs creates a new blog, total number increases by 1 an
 afterAll(() => {
   mongoose.connection.close();
 });
+
+test("if a post request has the property 'likes' missing default it to 0", async () => {
+  const newBlog = { title: "Jankos blog", url: "jankos.com" };
+
+  const res = await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  expect(res.body.likes).toBe(0);
+});
