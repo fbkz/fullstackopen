@@ -4,17 +4,16 @@ const Blog = require("../models/blog");
 
 router
   .route("/")
-  .get((req, res) => {
-    Blog.find({}).then((blogs) => {
-      res.json(blogs);
-    });
-  })
-  .post((req, res) => {
-    const blog = new Blog(req.body);
+  .get(async (req, res) => {
+    const blogs = await Blog.find({});
 
-    blog.save().then((result) => {
-      res.status(201).json(result);
-    });
+    res.json(blogs);
+  })
+  .post(async (req, res) => {
+    const blog = new Blog(req.body);
+    const result = await blog.save();
+
+    res.status(201).json(result);
   });
 
 module.exports = router;
