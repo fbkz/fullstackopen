@@ -25,6 +25,11 @@ test("length of the blogs list is correct", async () => {
   expect(res.body).toHaveLength(helper.initialBlog.length);
 });
 
+test("property id of returned blog object exists", async () => {
+  const res = await api.get("/api/blogs");
+  expect(res.body[0].id).toBeDefined();
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
