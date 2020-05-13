@@ -61,3 +61,13 @@ test("if a post request has the property 'likes' missing default it to 0", async
 
   expect(res.body.likes).toBe(0);
 });
+
+test("a post request object must have 'title' and 'url' properties", async () => {
+  const newBlog = { author: "Jankos" };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+});
