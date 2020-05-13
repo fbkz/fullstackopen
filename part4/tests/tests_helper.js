@@ -1,7 +1,7 @@
 const Blog = require("../models/blog");
 
 const initialBlogs = [
-  { title: "Caps blog", url: "caps.com", likes: 89 },
+  { title: "Caps blog", url: "caps.com", likes: 89, author: "Caps" },
   { title: "Perkz blog", url: "perkz.com", likes: 103 },
 ];
 

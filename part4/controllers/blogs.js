@@ -16,4 +16,21 @@ router
     res.status(201).json(result);
   });
 
+router
+  .route("/:id")
+  .get(async (req, res) => {
+    const id = req.params.id;
+
+    const result = await Blog.findById(id);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).end();
+    }
+  })
+  .delete(async (req, res) => {
+    await Blog.findByIdAndRemove(req.params.id);
+    res.status(204).end();
+  });
+
 module.exports = router;

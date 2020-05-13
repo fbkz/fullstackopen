@@ -13,61 +13,76 @@ beforeEach(async () => {
   await Promise.all(promiseArray);
 });
 
-test("blogs list is returned as json", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("when there is initially some blogs saved", () => {
+  test("blogs are returned as json", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("all blogs are returned", async () => {
+    const res = await api.get("/api/blogs");
+    expect(res.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test("property 'id' of a returned object exists", async () => {
+    const res = await api.get("/api/blogs");
+    expect(res.body[0].id).toBeDefined();
+  });
 });
 
-test("length of the blogs list is correct", async () => {
-  const res = await api.get("/api/blogs");
-  expect(res.body).toHaveLength(helper.initialBlogs.length);
+describe("when adding new blogs to /api/blogs", () => {
+  test("post request creates a new blog in the db and the total number increases by 1", async () => {
+    const newBlog = { title: "Mikyx blog", url: "mikyx.com", likes: 201 };
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+    const contents = blogsAtEnd.map((blog) => blog.title);
+    expect(contents).toContain(newBlog.title);
+  });
+
+  test("if a post request has the property 'likes' missing default it to 0 in the db", async () => {
+    const newBlog = { title: "Jankos blog", url: "jankos.com" };
+
+    const res = await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    expect(res.body.likes).toBe(0);
+  });
+
+  test("a post request object must have 'title' and 'url' properties", async () => {
+    const newBlog = { author: "Jankos" };
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+  });
 });
 
-test("property id of returned blog object exists", async () => {
-  const res = await api.get("/api/blogs");
-  expect(res.body[0].id).toBeDefined();
-});
+describe("when making a delete request to /api/blogs/:id", () => {
+  test("the resource is deleted and the 204 is received on the client", async () => {
+    const getRes = await api.get("/api/blogs");
+    const blogId = getRes.body[0].id;
+    await api.delete(`/api/blogs/${blogId}`).expect(204);
 
-test("http post to /api/blogs creates a new blog, total number increases by 1 and the new content is in the db", async () => {
-  const newBlog = { title: "Mikyx blog", url: "mikyx.com", likes: 201 };
-
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
-
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
-
-  const contents = blogsAtEnd.map((blog) => blog.title);
-  expect(contents).toContain(newBlog.title);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+  });
 });
 
 afterAll(() => {
   mongoose.connection.close();
-});
-
-test("if a post request has the property 'likes' missing default it to 0", async () => {
-  const newBlog = { title: "Jankos blog", url: "jankos.com" };
-
-  const res = await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
-
-  expect(res.body.likes).toBe(0);
-});
-
-test("a post request object must have 'title' and 'url' properties", async () => {
-  const newBlog = { author: "Jankos" };
-
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(400)
-    .expect("Content-Type", /application\/json/);
 });
