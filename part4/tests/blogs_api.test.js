@@ -74,12 +74,33 @@ describe("when adding new blogs to /api/blogs", () => {
 
 describe("when making a delete request to /api/blogs/:id", () => {
   test("the resource is deleted and the 204 is received on the client", async () => {
-    const getRes = await api.get("/api/blogs");
-    const blogId = getRes.body[0].id;
+    const blogId = (await helper.blogsInDb())[0].id;
     await api.delete(`/api/blogs/${blogId}`).expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+  });
+});
+
+describe("when updating a unique resource", () => {
+  test("if the 'author' property is being updated on an object that doesn't have it, create it", async () => {
+    const { author, id: blogId } = (await helper.blogsInDb())[1];
+    expect(author).toBe(undefined);
+
+    const updateBlog = { author: "Perkz" };
+    const result = (await api.put(`/api/blogs/${blogId}`).send(updateBlog))
+      .body;
+
+    expect(result.author).toContain(updateBlog.author);
+  });
+
+  test("an existing property is updated successfully", async () => {
+    const { id: blogId, likes } = (await helper.blogsInDb())[0];
+    const updateBlog = { likes: likes + 1 };
+    const result = (await api.put(`/api/blogs/${blogId}`).send(updateBlog))
+      .body;
+
+    expect(result.likes).toBe(likes + 1);
   });
 });
 

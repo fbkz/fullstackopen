@@ -31,6 +31,30 @@ router
   .delete(async (req, res) => {
     await Blog.findByIdAndRemove(req.params.id);
     res.status(204).end();
+  })
+  .put(async (req, res) => {
+    const { title, url, likes, author } = req.body;
+
+    const blogPost = {
+      title,
+      url,
+      likes,
+      author,
+    };
+
+    const updatedBlogPost = JSON.parse(JSON.stringify(blogPost));
+
+    const result = await Blog.findByIdAndUpdate(
+      req.params.id,
+      updatedBlogPost,
+      {
+        new: true,
+        runValidators: true,
+        context: "query",
+      }
+    );
+
+    res.json(result);
   });
 
 module.exports = router;
