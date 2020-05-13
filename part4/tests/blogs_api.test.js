@@ -8,7 +8,7 @@ const Blog = require("../models/blog");
 beforeEach(async () => {
   await Blog.deleteMany({});
 
-  const blogObjects = helper.initialBlog.map((blog) => new Blog(blog));
+  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
   const promiseArray = blogObjects.map((blog) => blog.save());
   await Promise.all(promiseArray);
 });
@@ -22,12 +22,28 @@ test("blogs list is returned as json", async () => {
 
 test("length of the blogs list is correct", async () => {
   const res = await api.get("/api/blogs");
-  expect(res.body).toHaveLength(helper.initialBlog.length);
+  expect(res.body).toHaveLength(helper.initialBlogs.length);
 });
 
 test("property id of returned blog object exists", async () => {
   const res = await api.get("/api/blogs");
   expect(res.body[0].id).toBeDefined();
+});
+
+test("http post to /api/blogs creates a new blog, total number increases by 1 and the new content is in the db", async () => {
+  const newBlog = { title: "Mikyx blog", url: "mikyx.com", likes: 201 };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+  const contents = blogsAtEnd.map((blog) => blog.title);
+  expect(contents).toContain(newBlog.title);
 });
 
 afterAll(() => {
