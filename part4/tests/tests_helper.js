@@ -5,6 +5,19 @@ const initialBlogs = [
   { title: "Perkz blog", url: "perkz.com", likes: 103 },
 ];
 
+const initialUsers = [
+  {
+    username: "g2caps",
+    password: "g2capspassword",
+    name: "Rasmus Winther",
+  },
+  {
+    username: "g2perkz",
+    password: "g2perkzpassword",
+    name: "Luka Perković",
+  },
+];
+
 const blogsInDb = async () => {
   const blogs = await Blog.find({});
   return blogs.map((blog) => blog.toJSON());
@@ -13,4 +26,5 @@ const blogsInDb = async () => {
 module.exports = {
   initialBlogs,
   blogsInDb,
+  initialUsers,
 };
