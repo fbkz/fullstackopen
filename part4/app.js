@@ -17,6 +17,8 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: error.message });
   } else if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "SyntaxError") {
+    return response.status(400).send({ error: "malformatted syntax" });
   }
 
   next(error);
@@ -25,6 +27,7 @@ const errorHandler = (error, request, response, next) => {
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/login", require("./controllers/login"));
 app.use("/api/users", require("./controllers/users"));
 app.use("/api/blogs", require("./controllers/blogs"));
 
