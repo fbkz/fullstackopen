@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const config = require("../utils/config");
 
 router
   .route("/")
@@ -15,14 +17,16 @@ router
   })
   .post(async (req, res) => {
     const { title, url, likes, author } = req.body;
+    const token = getTokenFrom(req);
+    const decodedToken = jwt.verify(token, config.SECRET);
 
-    const user = (await User.find({}))[0];
-    const userId = user._id;
+    const user = await User.findById(decodedToken.id);
+
     const blogPost = {
       title,
       url,
       likes,
-      user: userId,
+      user: user._id,
       author,
     };
 
@@ -76,5 +80,13 @@ router
 
     res.json(result);
   });
+
+function getTokenFrom(request) {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+    return authorization.slice(7);
+  }
+  return null;
+}
 
 module.exports = router;

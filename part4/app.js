@@ -19,6 +19,13 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: "malformatted id" });
   } else if (error.name === "SyntaxError") {
     return response.status(400).send({ error: "malformatted syntax" });
+  } else if (
+    error.message === "invalid token" ||
+    error.message === "jwt malformed"
+  ) {
+    return response.status(401).json({ error: "token is invalid" });
+  } else if (error.message === "jwt must be provided") {
+    return response.status(401).json({ error: "token is missing " });
   }
 
   next(error);
