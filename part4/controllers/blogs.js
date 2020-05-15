@@ -56,8 +56,22 @@ router
     }
   })
   .delete(async (req, res) => {
-    await Blog.findByIdAndRemove(req.params.id);
-    res.status(204).end();
+    const blog = await Blog.findById(req.params.id);
+
+    const { token } = req;
+    const decodedToken = jwt.verify(token, config.SECRET);
+
+    if (String(blog.user) == decodedToken.id) {
+      await Blog.findByIdAndRemove(req.params.id);
+      res.status(204).end();
+    } else {
+      res
+        .status(403)
+        .json({
+          error:
+            "you don't have permissions to delete content that does not belong to you",
+        });
+    }
   })
   .put(async (req, res) => {
     const { title, url, likes, author } = req.body;
