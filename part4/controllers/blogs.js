@@ -40,7 +40,7 @@ router
     user.blogs = user.blogs.concat(result._id);
     await user.save();
 
-    res.json(result);
+    res.status(201).json(result);
   });
 
 router
@@ -65,12 +65,10 @@ router
       await Blog.findByIdAndRemove(req.params.id);
       res.status(204).end();
     } else {
-      res
-        .status(403)
-        .json({
-          error:
-            "you don't have permissions to delete content that does not belong to you",
-        });
+      res.status(403).json({
+        error:
+          "you don't have permissions to delete content that does not belong to you",
+      });
     }
   })
   .put(async (req, res) => {

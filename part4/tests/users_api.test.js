@@ -4,13 +4,26 @@ const app = require("../app");
 const api = supertest(app);
 const helper = require("./tests_helper");
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 beforeEach(async () => {
   await User.deleteMany({});
 
-  const userObjects = helper.initialUsers.map((user) => new User(user));
+  let userObjects = [];
+  for await (user of helper.initialUsers) {
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(user.password, saltRounds);
+    userObjects.push({ ...user, passwordHash });
+  }
+
+  userObjects = userObjects.map((user) => new User(user));
+
   const promiseArray = userObjects.map((user) => user.save());
   await Promise.all(promiseArray);
+});
+
+test("passed", () => {
+  expect(1).toBe(1);
 });
 
 describe("when creating a new user", () => {
