@@ -16,8 +16,11 @@ router
     res.json(blogs);
   })
   .post(async (req, res) => {
-    const { title, url, likes, author } = req.body;
-    const token = getTokenFrom(req);
+    const {
+      token,
+      body: { title, url, likes, author },
+    } = req;
+
     const decodedToken = jwt.verify(token, config.SECRET);
 
     const user = await User.findById(decodedToken.id);
@@ -37,7 +40,7 @@ router
     user.blogs = user.blogs.concat(result._id);
     await user.save();
 
-    res.status(201).json(result);
+    res.json(result);
   });
 
 router

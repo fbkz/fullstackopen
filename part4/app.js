@@ -12,7 +12,17 @@ mongoose.connect(config.MONGODB_URI, {
   useCreateIndex: true,
 });
 
-const errorHandler = (error, request, response, next) => {
+app.use(cors());
+app.use(express.json());
+app.use(tokenExtractor);
+
+app.use("/api/login", require("./controllers/login"));
+app.use("/api/users", require("./controllers/users"));
+app.use("/api/blogs", require("./controllers/blogs"));
+
+app.use(errorHandler);
+
+function errorHandler(error, request, response, next) {
   if (error.name === "ValidationError") {
     return response.status(400).send({ error: error.message });
   } else if (error.name === "CastError") {
@@ -29,14 +39,14 @@ const errorHandler = (error, request, response, next) => {
   }
 
   next(error);
-};
+}
 
-app.use(cors());
-app.use(express.json());
+function tokenExtractor(request, response, next) {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+    request.token = authorization.slice(7);
+  }
+  next();
+}
 
-app.use("/api/login", require("./controllers/login"));
-app.use("/api/users", require("./controllers/users"));
-app.use("/api/blogs", require("./controllers/blogs"));
-
-app.use(errorHandler);
 module.exports = app;
