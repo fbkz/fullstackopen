@@ -14,8 +14,12 @@ const setToken = (newToken) => {
 
 const create = async (blogObject) => {
   const config = { headers: { Authorization: token } };
-  const response = await axios.post(baseUrl, blogObject, config);
-  return response.data;
+  try {
+    const response = await axios.post(baseUrl, blogObject, config);
+    return response.data;
+  } catch (error) {
+    console.log(error.response);
+  }
 };
 
 export default { getAll, create, setToken };

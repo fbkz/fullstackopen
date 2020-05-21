@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import Notifications from "./components/Notifications";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -9,10 +10,17 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+  const [notifications, setNotifications] = useState(null);
 
   const loginForm = () => (
     <div>
       <h2>login to application</h2>
+      {notifications != null && (
+        <Notifications
+          message={notifications.message}
+          error={notifications.error}
+        />
+      )}
 
       <form onSubmit={handleLogin}>
         <div>
@@ -51,8 +59,11 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
+      if (notifications) {
+        setNotifications(null);
+      }
     } catch (error) {
-      console.log(error.response.data.error);
+      setNotifications({ message: error.response.data.error, error: true });
     }
   };
 
@@ -108,6 +119,13 @@ const App = () => {
     blogService.create(blogObject).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog));
       setNewBlog({ title: "", author: "", url: "" });
+      setNotifications({
+        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        error: false,
+      });
+      setTimeout(() => {
+        setNotifications(null);
+      }, 5000);
     });
   };
 
@@ -116,6 +134,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
@@ -129,6 +148,13 @@ const App = () => {
       {user != null && (
         <div>
           <h2>blogs</h2>
+          {notifications != null && (
+            <Notifications
+              message={notifications.message}
+              error={notifications.error}
+            />
+          )}
+
           <p>
             {user.name} logged in{" "}
             <button
