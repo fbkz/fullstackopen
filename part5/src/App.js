@@ -4,53 +4,19 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notifications from "./components/Notifications";
 import Togglable from "./components/Togglable";
+import BlogForm from "./components/BlogForm";
+import LoginForm from "./components/LoginForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+
   const [user, setUser] = useState(null);
-  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+
   const [notifications, setNotifications] = useState(null);
 
   const blogFormRef = useRef(null);
 
-  const loginForm = () => (
-    <div>
-      <h2>login to application</h2>
-      {notifications != null && (
-        <Notifications
-          message={notifications.message}
-          error={notifications.error}
-        />
-      )}
-
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  );
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({
         username,
@@ -60,8 +26,7 @@ const App = () => {
       window.localStorage.setItem("loggedUser", JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      setUsername("");
-      setPassword("");
+
       if (notifications) {
         setNotifications(null);
       }
@@ -70,58 +35,10 @@ const App = () => {
     }
   };
 
-  const blogsForm = () => (
-    <div>
-      <form onSubmit={addBlog}>
-        <div>
-          title:
-          <input
-            type="text"
-            value={newBlog.title}
-            name="Username"
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, title: target.value })
-            }
-          />
-        </div>
-        <div>
-          author:
-          <input
-            type="text"
-            value={newBlog.author}
-            name="Username"
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, author: target.value })
-            }
-          />
-        </div>
-        <div>
-          url:
-          <input
-            type="text"
-            value={newBlog.url}
-            name="Username"
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, url: target.value })
-            }
-          />
-        </div>
-        <button type="submit">create</button>
-      </form>
-    </div>
-  );
-
-  const addBlog = (event) => {
-    event.preventDefault();
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url,
-    };
-
-    blogService.create(blogObject).then((returnedBlog) => {
+  const addBlog = async (blogObj) => {
+    var returnedBlog = await blogService.create(blogObj);
+    if (returnedBlog.hasOwnProperty("id")) {
       setBlogs(blogs.concat(returnedBlog));
-      setNewBlog({ title: "", author: "", url: "" });
       blogFormRef.current.toggleVisibility();
       setNotifications({
         message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
@@ -130,7 +47,13 @@ const App = () => {
       setTimeout(() => {
         setNotifications(null);
       }, 5000);
-    });
+      console.log(returnedBlog);
+    } else {
+      setNotifications({ message: returnedBlog.data.error, error: true });
+      setTimeout(() => {
+        setNotifications(null);
+      }, 5000);
+    }
   };
 
   useEffect(() => {
@@ -148,16 +71,16 @@ const App = () => {
 
   return (
     <div>
-      {user == null && loginForm()}
+      {notifications !== null ? (
+        <Notifications
+          message={notifications.message}
+          error={notifications.error}
+        />
+      ) : null}
+      {user == null && <LoginForm handleUserLogin={handleLogin} />}
       {user != null && (
         <div>
           <h2>blogs</h2>
-          {notifications != null && (
-            <Notifications
-              message={notifications.message}
-              error={notifications.error}
-            />
-          )}
 
           <p>
             {user.name} logged in{" "}
@@ -172,8 +95,7 @@ const App = () => {
           </p>
 
           <Togglable buttonLabel={"new blog"} ref={blogFormRef}>
-            <h2>create new</h2>
-            {blogsForm()}
+            <BlogForm createBlog={addBlog} />
           </Togglable>
         </div>
       )}
