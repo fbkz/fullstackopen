@@ -65,7 +65,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService.getAll().then((blogs) => {
+      let sortedByLikes = blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(sortedByLikes);
+    });
   }, [forceReRender]);
 
   return (
