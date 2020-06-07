@@ -9,10 +9,9 @@ import LoginForm from "./components/LoginForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-
   const [user, setUser] = useState(null);
-
   const [notifications, setNotifications] = useState(null);
+  const [forceReRender, setForceReRender] = useState(0);
 
   const blogFormRef = useRef(null);
 
@@ -67,7 +66,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  }, [forceReRender]);
 
   return (
     <div>
@@ -99,7 +98,15 @@ const App = () => {
           </Togglable>
         </div>
       )}
-      {user != null && blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
+      {user != null &&
+        blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            setReRender={setForceReRender}
+            reRender={forceReRender}
+          />
+        ))}
     </div>
   );
 };
