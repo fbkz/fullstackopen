@@ -38,6 +38,7 @@ const App = () => {
     var returnedBlog = await blogService.create(blogObj);
     if (returnedBlog.hasOwnProperty("id")) {
       setBlogs(blogs.concat(returnedBlog));
+      setForceReRender(forceReRender + 1);
       blogFormRef.current.toggleVisibility();
       setNotifications({
         message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
@@ -46,7 +47,6 @@ const App = () => {
       setTimeout(() => {
         setNotifications(null);
       }, 5000);
-      console.log(returnedBlog);
     } else {
       setNotifications({ message: returnedBlog.data.error, error: true });
       setTimeout(() => {
@@ -108,6 +108,7 @@ const App = () => {
             blog={blog}
             setReRender={setForceReRender}
             reRender={forceReRender}
+            loggedUser={user}
           />
         ))}
     </div>

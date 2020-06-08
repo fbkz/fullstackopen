@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, setReRender, reRender }) => {
+const Blog = ({ blog, loggedUser, reRender, setReRender }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const blogStyle = {
@@ -21,9 +21,21 @@ const Blog = ({ blog, setReRender, reRender }) => {
     setReRender(reRender + 1);
   };
 
+  let handleDeleteClick = async (blog) => {
+    let result = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}? `
+    );
+
+    if (result) {
+      await blogService.deletePost(blog.id);
+      setReRender(reRender + 1);
+    }
+  };
+
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author}{" "}
+      <pre>{JSON.stringify(loggedUser.username)}</pre>
+      {blog.title} {blog.author}
       <button onClick={handleClick}>{isOpen ? "hide" : "view"}</button>
       {isOpen && (
         <>
@@ -34,6 +46,10 @@ const Blog = ({ blog, setReRender, reRender }) => {
           <button onClick={() => handleLikeClick(blog)}>like</button>
           <br />
           {blog.user.name}
+          <br />
+          {loggedUser.username === blog.user.username ? (
+            <button onClick={() => handleDeleteClick(blog)}>delete</button>
+          ) : null}
         </>
       )}
     </div>
