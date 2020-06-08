@@ -34,7 +34,6 @@ const Blog = ({ blog, loggedUser, reRender, setReRender }) => {
 
   return (
     <div style={blogStyle}>
-      <pre>{JSON.stringify(loggedUser.username)}</pre>
       {blog.title} {blog.author}
       <button onClick={handleClick}>{isOpen ? "hide" : "view"}</button>
       {isOpen && (

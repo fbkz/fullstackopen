@@ -35,8 +35,12 @@ const App = () => {
   };
 
   const addBlog = async (blogObj) => {
-    var returnedBlog = await blogService.create(blogObj);
-    if (returnedBlog.hasOwnProperty("id")) {
+    let returnedBlog = await blogService.create(blogObj);
+    let hasIdProperty = Object.prototype.hasOwnProperty.call(
+      returnedBlog,
+      "id"
+    );
+    if (hasIdProperty) {
       setBlogs(blogs.concat(returnedBlog));
       setForceReRender(forceReRender + 1);
       blogFormRef.current.toggleVisibility();
