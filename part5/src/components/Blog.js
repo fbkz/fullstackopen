@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, loggedUser, reRender, setReRender }) => {
+const Blog = ({ blog, loggedUser, reRender, setReRender, handleLikeClick }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const blogStyle = {
@@ -16,10 +16,10 @@ const Blog = ({ blog, loggedUser, reRender, setReRender }) => {
     setIsOpen(!isOpen);
   };
 
-  let handleLikeClick = (blog) => {
-    blogService.update({ ...blog, likes: blog.likes + 1 });
-    setReRender(reRender + 1);
-  };
+  // let handleLikeClick = (blog) => {
+  //   blogService.update({ ...blog, likes: blog.likes + 1 });
+  //   setReRender(reRender + 1);
+  // };
 
   let handleDeleteClick = async (blog) => {
     let result = window.confirm(
@@ -33,7 +33,7 @@ const Blog = ({ blog, loggedUser, reRender, setReRender }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       {blog.title} {blog.author}
       <button onClick={handleClick}>{isOpen ? "hide" : "view"}</button>
       {isOpen && (

@@ -75,6 +75,11 @@ const App = () => {
     });
   }, [forceReRender]);
 
+  let handleLikeClick = (blog) => {
+    blogService.update({ ...blog, likes: blog.likes + 1 });
+    setForceReRender(forceReRender + 1);
+  };
+
   return (
     <div>
       {notifications !== null ? (
@@ -113,6 +118,7 @@ const App = () => {
             setReRender={setForceReRender}
             reRender={forceReRender}
             loggedUser={user}
+            handleLikeClick={handleLikeClick}
           />
         ))}
     </div>
