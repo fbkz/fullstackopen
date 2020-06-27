@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const app = express();
+const morgan = require("morgan");
 require("express-async-errors");
 
 mongoose.connect(config.MONGODB_URI, {
@@ -15,10 +16,13 @@ mongoose.connect(config.MONGODB_URI, {
 app.use(cors());
 app.use(express.json());
 app.use(tokenExtractor);
-
+app.use(morgan("tiny"));
 app.use("/api/login", require("./controllers/login"));
 app.use("/api/users", require("./controllers/users"));
 app.use("/api/blogs", require("./controllers/blogs"));
+if (process.env.NODE_ENV === "test") {
+  app.use("/api/testing", require("./controllers/resetdb"));
+}
 
 app.use(errorHandler);
 
