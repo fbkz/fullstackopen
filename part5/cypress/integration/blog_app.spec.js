@@ -40,12 +40,9 @@ describe("Blog app", function () {
 
   describe.only("When logged in", function () {
     beforeEach(function () {
-      cy.request("POST", "http://localhost:3001/api/login", {
+      cy.login({
         username: "g2caps",
         password: "g2capspassword",
-      }).then((response) => {
-        localStorage.setItem("loggedUser", JSON.stringify(response.body));
-        cy.visit("http://localhost:3000");
       });
     });
 
@@ -61,24 +58,44 @@ describe("Blog app", function () {
     });
 
     it("A user can like a blog", function () {
-      cy.request({
-        url: "http://localhost:3001/api/blogs",
-        method: "POST",
-        body: {
-          title: "most dominant LoL team of the west",
-          author: "Carlos Ocelote",
-          url: "http://g2.com",
-        },
-        headers: {
-          Authorization: `bearer ${
-            JSON.parse(localStorage.getItem("loggedUser")).token
-          }`,
-        },
+      cy.createBlog({
+        title: "most dominant LoL team of the west",
+        author: "Carlos Ocelote",
+        url: "http://g2.com",
       });
-      cy.visit("http://localhost:3000");
+
       cy.contains("view").click();
       cy.contains("like").click();
       cy.get("#likes").contains("1");
+    });
+
+    it("A user can delete a blog that he has created", function () {
+      cy.createBlog({
+        title: "most dominant LoL team of the west",
+        author: "Carlos Ocelote",
+        url: "http://g2.com",
+      });
+      cy.contains("view").click();
+      cy.contains("delete")
+        .click()
+        .should("not.contain", "most dominant LoL team of the west");
+    });
+
+    it("A user cannot delete a blog that has not created", function () {
+      cy.createBlog({
+        title: "most dominant LoL team of the west",
+        author: "Carlos Ocelote",
+        url: "http://g2.com",
+      });
+      cy.contains("logout").click();
+      cy.createUser({
+        name: "Luka Perkovic",
+        username: "g2perkz",
+        password: "g2perkzpassword",
+      });
+      cy.login({ username: "g2perkz", password: "g2perkzpassword" });
+      cy.contains("view").click();
+      cy.should("not.contain", "delete");
     });
   });
 });
