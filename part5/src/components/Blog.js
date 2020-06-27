@@ -35,13 +35,15 @@ const Blog = ({ blog, loggedUser, reRender, setReRender, handleLikeClick }) => {
   return (
     <div style={blogStyle} className="blog">
       {blog.title} {blog.author}
-      <button onClick={handleClick}>{isOpen ? "hide" : "view"}</button>
+      <button className="view-button" onClick={handleClick}>
+        {isOpen ? "hide" : "view"}
+      </button>
       {isOpen && (
         <>
           <br />
           {blog.url}
           <br />
-          <span id="likes">{blog.likes}</span>{" "}
+          <span className="likes">{blog.likes}</span>{" "}
           <button onClick={() => handleLikeClick(blog)}>like</button>
           <br />
           {blog.user.name}

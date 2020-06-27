@@ -38,7 +38,7 @@ describe("Blog app", function () {
     });
   });
 
-  describe.only("When logged in", function () {
+  describe("When logged in", function () {
     beforeEach(function () {
       cy.login({
         username: "g2caps",
@@ -63,10 +63,11 @@ describe("Blog app", function () {
         author: "Carlos Ocelote",
         url: "http://g2.com",
       });
+      cy.visit("http://localhost:3000");
 
       cy.contains("view").click();
       cy.contains("like").click();
-      cy.get("#likes").contains("1");
+      cy.get(".likes").contains("1");
     });
 
     it("A user can delete a blog that he has created", function () {
@@ -75,6 +76,7 @@ describe("Blog app", function () {
         author: "Carlos Ocelote",
         url: "http://g2.com",
       });
+      cy.visit("http://localhost:3000");
       cy.contains("view").click();
       cy.contains("delete")
         .click()
@@ -96,6 +98,49 @@ describe("Blog app", function () {
       cy.login({ username: "g2perkz", password: "g2perkzpassword" });
       cy.contains("view").click();
       cy.should("not.contain", "delete");
+    });
+
+    it("Blogs are ordered accordingly to likwa", function () {
+      const likesValues = [165, 45, 25, 3];
+
+      cy.createBlog({
+        title: "most dominant LoL team of the west",
+        author: "Carlos Ocelote",
+        url: "http://g2.com",
+        likes: likesValues[1],
+      });
+      cy.createBlog({
+        title: "fnatic vs g2",
+        author: "deficio",
+        url: "http://lec.com",
+        likes: likesValues[0],
+      });
+      cy.createBlog({
+        title: "danya vs hik",
+        author: "Alex",
+        url: "http://chess.com",
+        likes: likesValues[2],
+      });
+      cy.createBlog({
+        title: "el clasico de espana",
+        author: "Messi",
+        url: "http://messi.com",
+        likes: likesValues[3],
+      });
+      cy.visit("http://localhost:3000");
+      cy.get(".view-button").each((el) => el.click());
+
+      cy.get(".likes").then((x) => {
+        let first = Number(x[0].innerText);
+        let second = Number(x[1].innerText);
+        let third = Number(x[2].innerText);
+        let fourth = Number(x[3].innerText);
+
+        expect([first, second, third, fourth]).to.have.ordered.members(
+          likesValues
+        );
+      });
+      //
     });
   });
 });
