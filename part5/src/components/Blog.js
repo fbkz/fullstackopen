@@ -41,7 +41,7 @@ const Blog = ({ blog, loggedUser, reRender, setReRender, handleLikeClick }) => {
           <br />
           {blog.url}
           <br />
-          {blog.likes}{" "}
+          <span id="likes">{blog.likes}</span>{" "}
           <button onClick={() => handleLikeClick(blog)}>like</button>
           <br />
           {blog.user.name}
