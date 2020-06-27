@@ -12,10 +12,18 @@ const Notifications = ({ message, error }) => {
 
   if (error) {
     styling.color = "red";
-    return <p style={styling}>{message}</p>;
+    return (
+      <p id="notification" style={styling}>
+        {message}
+      </p>
+    );
   } else {
     styling.color = "green";
-    return <p style={styling}>{message}</p>;
+    return (
+      <p id="notification" style={styling}>
+        {message}
+      </p>
+    );
   }
 };
 
