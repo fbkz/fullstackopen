@@ -10,4 +10,19 @@ const reducer = (state = "", action) => {
   }
 };
 
+export const setNotification = (message) => {
+  return {
+    type: "SET_NOTIFICATION",
+    data: {
+      message,
+    },
+  };
+};
+
+export const removeNotification = () => {
+  return {
+    type: "DELETE_NOTIFICATION",
+  };
+};
+
 export default reducer;

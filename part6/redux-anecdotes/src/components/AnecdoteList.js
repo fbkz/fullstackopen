@@ -1,12 +1,15 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { voteAnecdote } from "../reducers/anecdoteReducer";
+import {
+  setNotification,
+  removeNotification,
+} from "../reducers/notificationReducer";
 
 const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   const anecdotes = useSelector((state) => {
-    console.log(state);
     const sortedByVotes = state.anecdotes.sort((a, b) => b.votes - a.votes);
     return sortedByVotes;
   });
@@ -14,6 +17,11 @@ const AnecdoteList = () => {
   const vote = (id) => {
     console.log("vote", id);
     dispatch(voteAnecdote(id));
+    const anecdote = anecdotes.find((anecdote) => anecdote.id === id);
+    dispatch(setNotification(anecdote.content));
+    setTimeout(() => {
+      dispatch(removeNotification());
+    }, 5000);
   };
 
   return (
