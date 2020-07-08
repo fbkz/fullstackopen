@@ -13,7 +13,7 @@ const AnecdoteForm = () => {
   };
 
   return (
-    <>
+    <div>
       <h2>create new</h2>
       <form onSubmit={handleAddAnecdote}>
         <div>
@@ -24,7 +24,7 @@ const AnecdoteForm = () => {
         </div>
         <button>create</button>
       </form>
-    </>
+    </div>
   );
 };
 
