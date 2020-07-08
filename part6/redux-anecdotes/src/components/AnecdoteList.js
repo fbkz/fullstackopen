@@ -6,7 +6,8 @@ const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   const anecdotes = useSelector((state) => {
-    const sortedByVotes = state.sort((a, b) => b.votes - a.votes);
+    console.log(state);
+    const sortedByVotes = state.anecdotes.sort((a, b) => b.votes - a.votes);
     return sortedByVotes;
   });
 
