@@ -10,7 +10,10 @@ const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   const anecdotes = useSelector((state) => {
-    const sortedByVotes = state.anecdotes.sort((a, b) => b.votes - a.votes);
+    const anecdotes = state.anecdotes.filter((anecdote) =>
+      anecdote.content.toLowerCase().includes(state.filter)
+    );
+    const sortedByVotes = anecdotes.sort((a, b) => b.votes - a.votes);
     return sortedByVotes;
   });
 
