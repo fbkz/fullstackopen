@@ -10,12 +10,18 @@ const reducer = (state = "", action) => {
   }
 };
 
-export const setNotification = (message) => {
-  return {
-    type: "SET_NOTIFICATION",
-    data: {
-      message,
-    },
+export const setNotification = (message, time) => {
+  return async (dispatch) => {
+    dispatch({
+      type: "SET_NOTIFICATION",
+      data: {
+        message,
+      },
+    });
+
+    setTimeout(() => {
+      dispatch(removeNotification());
+    }, time * 1000);
   };
 };
 
