@@ -4,7 +4,7 @@ import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
 import Filter from "./components/Filter";
 import { initAnecdotes } from "./reducers/anecdoteReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -12,12 +12,14 @@ const App = () => {
     dispatch(initAnecdotes());
   }, [dispatch]);
 
+  const anecdotesLength = useSelector((state) => state.anecdotes.length);
+
   return (
     <div>
       <h2>Anecdotes</h2>
       <Notification />
       <Filter />
-      <AnecdoteList />
+      {anecdotesLength > 0 ? <AnecdoteList /> : null}
       <AnecdoteForm />
     </div>
   );

@@ -20,7 +20,7 @@ const reducer = (state = [], action) => {
       );
       return newState;
     case "NEW_ANECDOTE":
-      const newAnecdote = action.data.anecdote;
+      const newAnecdote = action.data;
       return [...state, newAnecdote];
 
     default:
@@ -39,11 +39,13 @@ export const initAnecdotes = () => {
 };
 
 export const addAnecdote = (anecdote) => {
-  return {
-    type: "NEW_ANECDOTE",
-    data: {
-      anecdote,
-    },
+  return async (dispatch) => {
+    console.log(dispatch);
+    const newAnecdote = await anecdoteService.createAnecdote(anecdote);
+    dispatch({
+      type: "NEW_ANECDOTE",
+      data: newAnecdote,
+    });
   };
 };
 
