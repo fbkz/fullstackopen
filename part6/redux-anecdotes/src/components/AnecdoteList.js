@@ -18,7 +18,9 @@ const AnecdoteList = (props) => {
     const anecdotes = props.anecdotes.filter((anecdote) =>
       anecdote.content.toLowerCase().includes(props.filter)
     );
-    return anecdotes;
+
+    const sortedByVotes = anecdotes.sort((a, b) => b.votes - a.votes);
+    return sortedByVotes;
   };
 
   const vote = (anecdote) => {
